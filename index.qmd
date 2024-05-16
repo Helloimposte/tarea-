@@ -1,0 +1,80 @@
+---
+bibliography: references.bib
+---
+
+#Introduccion
+
+Las enfermedades cardiovasculares, como los infartos de miocardio e insuficiencia cardíaca, son una causa importante de muerte a nivel mundial. Un estudio analizó datos de 299 pacientes con insuficiencia cardíaca para predecir su supervivencia. Descubrieron que la creatinina sérica y la fracción de eyección son las características más importantes para predecir la supervivencia. Estos hallazgos podrían tener un impacto significativo en la práctica clínica, brindando a los médicos una herramienta adicional para predecir la supervivencia de los pacientes con insuficiencia cardíaca.
+
+[@chicco2020]title: "supervivencia-de-pacientes-con-insuficiencia-cardíaca" author: "Bernardo" html toc: true lang: es theme: solar editor: visual ---ption disables the printing of code (only output is displayed).
+
+#carga de paquetes
+```{r}
+#carga de paquetes
+# | label: carga-paquetes
+# | message: false 
+# | warning: false 
+
+library(tidyverse)
+library(dplyr)
+library(knitr)
+
+```
+#carga de datos
+```{r}
+#| label: carga-datos
+#| message: false
+#| warning: false
+datos <- read.csv(file.choose(),header = TRUE)
+
+```
+
+# Consulta 1
+Tabla de Mujeres mayores de 75 años mostradas de manera descendente teniendo en cuenta la Edad, Diabetes, Presión arterial alta, Creatinina sérica
+```{r}
+#| label: consulta-01
+datos %>% arrange(desc(age)) |>
+  filter(sex == 0) |>
+  filter(age > 75) |>
+  select(sex, age, diabetes, high_blood_pressure, serum_creatinine ) |> 
+  kable()
+
+```
+
+# consulta 2
+
+Tabla de Hombres diabeticos o fumadores mostrados de manera asecendente, teniendo en cuenta Edad, Diabetes , fumadores , Fracción de eyección.
+
+```{r}
+#| label: consulta-02
+datos %>% arrange(age) |>
+  select( sex,  age, diabetes, smoking , ejection_fraction ) |> 
+     filter(sex == 1) |>
+  filter(smoking == 1) |>
+  filter(diabetes == 1) |>
+  kable()
+```
+
+# consulta 3
+
+Tabla de promedio de fracción de eyección de los pacientes diabéticos y de los pacientes no diabéticos.
+
+```{r}
+#| label: consulta-03
+datos |>
+  group_by(diabetes) %>%
+  summarise( ejection_fraction= mean( ejection_fraction , na.rm = TRUE),
+            n = n()) |>
+
+  kable()
+```
+
+# consulta 4
+
+Tabla de la menor edad de los hombres fallecidos.
+```{r}
+consulta_4_resultado <- datos |>
+  filter(sex == 1, DEATH_EVENT == 1) |>
+  mutate(menor_edad = min(age))
+kable(consulta_4_resultado)
+```
